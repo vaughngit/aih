@@ -10,7 +10,7 @@ A small Go CLI that launches any agent backend (Claude Code, Codex, Crush, Kiro,
 go install github.com/vaughngit/aih/cmd/aih@latest
 ```
 
-Requires Go 1.25+.
+Requires Go 1.26+.
 
 Pre-built binaries and Homebrew tap will land at v0.1.0 (Phase 6).
 
