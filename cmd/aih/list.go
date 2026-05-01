@@ -26,9 +26,11 @@ func newListCmd() *cobra.Command {
 				return nil
 			}
 			tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			fmt.Fprintln(tw, "NAME\tKIND\tWORKSPACE\tDESCRIPTION")
+			// tabwriter buffers; mid-loop writes never error. Flush surfaces
+			// any real failure.
+			_, _ = fmt.Fprintln(tw, "NAME\tKIND\tWORKSPACE\tDESCRIPTION")
 			for _, m := range ms {
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", m.Name, m.Kind, m.Workspace, m.Description)
+				_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", m.Name, m.Kind, m.Workspace, m.Description)
 			}
 			return tw.Flush()
 		},
