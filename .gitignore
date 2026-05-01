@@ -1,0 +1,14 @@
+# Binaries
+/aih
+/dist/
+
+# Build artifacts
+*.test
+*.out
+coverage.txt
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
