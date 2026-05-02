@@ -29,6 +29,9 @@ func newLaunchCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if err := m.Validate(); err != nil {
+				return err
+			}
 
 			kind := m.Kind
 			if backendOver != "" {
@@ -40,6 +43,9 @@ func newLaunchCmd() *cobra.Command {
 
 			b, err := backends.Get(kind)
 			if err != nil {
+				return err
+			}
+			if err := b.ValidateConfig(m.BackendConfig(b.Name())); err != nil {
 				return err
 			}
 

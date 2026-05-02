@@ -11,18 +11,21 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/pelletier/go-toml/v2"
 )
+
+var validate = validator.New(validator.WithRequiredStructEnabled())
 
 // Manifest mirrors the TOML schema. The Kind field is the backend
 // discriminator (renamed from "backend" in the spec because TOML disallows a
 // key being both a value and a table-prefix). Per-backend config lives in
 // BackendCfg, populated from the [backend.<name>] tables.
 type Manifest struct {
-	Name        string            `toml:"name"`
+	Name        string            `toml:"name"        validate:"required"`
 	Description string            `toml:"description"`
-	Kind        string            `toml:"kind"`
-	Workspace   string            `toml:"workspace"`
+	Kind        string            `toml:"kind"        validate:"required"`
+	Workspace   string            `toml:"workspace"   validate:"required"`
 	Resources   []string          `toml:"resources"`
 	Command     []string          `toml:"command"`
 	Env         map[string]string `toml:"env"`
@@ -31,6 +34,47 @@ type Manifest struct {
 
 	// Source records where the manifest was loaded from. Not part of TOML.
 	Source string `toml:"-"`
+}
+
+// Validate runs struct-tag validation on the manifest. Per-backend
+// [backend.<name>] table validation is the backend's job (see
+// internal/backends.Backend.ValidateConfig); call BackendConfig to extract
+// the raw map.
+func (m *Manifest) Validate() error {
+	if err := validate.Struct(m); err != nil {
+		var verrs validator.ValidationErrors
+		if errors.As(err, &verrs) {
+			msgs := make([]string, 0, len(verrs))
+			for _, fe := range verrs {
+				msgs = append(msgs, fmt.Sprintf("  - %s: failed %q", fe.Field(), fe.Tag()))
+			}
+			where := m.Source
+			if where == "" {
+				where = "<unknown source>"
+			}
+			return fmt.Errorf("manifest %s: validation failed:\n%s", where, strings.Join(msgs, "\n"))
+		}
+		return err
+	}
+	return nil
+}
+
+// BackendConfig returns the [backend.<name>] table as a raw map, or nil if
+// the manifest has no such table. Backends pass this to their
+// ValidateConfig and config-key readers.
+func (m *Manifest) BackendConfig(name string) map[string]any {
+	if m.BackendCfg == nil {
+		return nil
+	}
+	v, ok := m.BackendCfg[name]
+	if !ok {
+		return nil
+	}
+	cfg, ok := v.(map[string]any)
+	if !ok {
+		return nil
+	}
+	return cfg
 }
 
 // Hooks is the [hooks] table. Phase 1 stub; Phase 4 wires this to a runner.

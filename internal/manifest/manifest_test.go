@@ -168,6 +168,54 @@ agent = "kubernetes"
 	}
 }
 
+func TestValidate_AllFieldsPresent(t *testing.T) {
+	m := &Manifest{Name: "x", Kind: "generic", Workspace: "/tmp", Source: "x.toml"}
+	if err := m.Validate(); err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+}
+
+func TestValidate_MissingFields(t *testing.T) {
+	cases := []struct {
+		name string
+		m    *Manifest
+		want string // substring expected in the error
+	}{
+		{"no name", &Manifest{Kind: "generic", Workspace: "/tmp"}, "Name"},
+		{"no kind", &Manifest{Name: "x", Workspace: "/tmp"}, "Kind"},
+		{"no workspace", &Manifest{Name: "x", Kind: "generic"}, "Workspace"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.m.Validate()
+			if err == nil {
+				t.Fatal("expected validation error, got nil")
+			}
+			if !strings.Contains(err.Error(), tc.want) {
+				t.Errorf("error %q does not mention %q", err, tc.want)
+			}
+		})
+	}
+}
+
+func TestBackendConfig_ExtractsTable(t *testing.T) {
+	m := &Manifest{
+		BackendCfg: map[string]any{
+			"claude-code": map[string]any{"agent": "k8s", "model": "opus"},
+		},
+	}
+	cfg := m.BackendConfig("claude-code")
+	if cfg["agent"] != "k8s" {
+		t.Errorf("agent = %v", cfg["agent"])
+	}
+	if got := m.BackendConfig("missing"); got != nil {
+		t.Errorf("missing should be nil, got %v", got)
+	}
+	if got := (&Manifest{}).BackendConfig("any"); got != nil {
+		t.Errorf("nil BackendCfg should yield nil, got %v", got)
+	}
+}
+
 func TestExpandPath_Empty(t *testing.T) {
 	got, err := ExpandPath("")
 	if err != nil {
