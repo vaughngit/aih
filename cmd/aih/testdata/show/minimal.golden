@@ -1,0 +1,10 @@
+name = 'minimal'
+description = ''
+kind = 'generic'
+workspace = '/tmp/aih-minimal'
+resources = []
+command = ['/bin/echo', 'hello']
+
+[hooks]
+  pre_launch = []
+  post_launch = []

@@ -1,0 +1,4 @@
+name = "minimal"
+kind = "generic"
+workspace = "/tmp/aih-minimal"
+command = ["/bin/echo", "hello"]

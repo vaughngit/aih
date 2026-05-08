@@ -1,0 +1,22 @@
+name = 'full-claude'
+description = 'Claude Code with config'
+kind = 'claude-code'
+workspace = '/tmp/aih-claude'
+resources = ['/tmp/aih-notes', '/tmp/aih-shared']
+command = []
+
+[env]
+  AIH_MODE = 'test'
+  KUBECONFIG = '/tmp/kubeconfig'
+
+[hooks]
+  pre_launch = []
+  post_launch = []
+
+[backend]
+  [backend.claude-code]
+    agent = 'kubernetes'
+    append_system_prompt = 'stay focused'
+    binary = '/usr/local/bin/claude'
+    model = 'sonnet'
+    permission_mode = 'default'

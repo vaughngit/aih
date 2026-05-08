@@ -1,0 +1,15 @@
+name = "expanded-paths"
+description = "tilde and environment expansion"
+kind = "codex"
+workspace = "~/work"
+resources = ["$AIH_SAMPLE_ROOT/notes", "${AIH_SAMPLE_ROOT}/shared"]
+
+[env]
+AIH_DATA = "~/data"
+AIH_ROOT = "$AIH_SAMPLE_ROOT"
+
+[backend.codex]
+binary = "/usr/local/bin/codex"
+model = "gpt-5"
+sandbox = "workspace-write"
+ask_for_approval = "on-request"
