@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -71,10 +70,10 @@ func newLaunchCmd() *cobra.Command {
 				return err
 			}
 			if res.Signal != "" {
-				fmt.Fprintf(os.Stderr, "aih: child terminated by signal %s\n", res.Signal)
+				fmt.Fprintf(cmd.ErrOrStderr(), "aih: child terminated by signal %s\n", res.Signal)
 			}
 			if res.ExitCode != 0 {
-				os.Exit(res.ExitCode)
+				exit(res.ExitCode)
 			}
 			return nil
 		},

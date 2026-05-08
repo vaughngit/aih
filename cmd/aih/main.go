@@ -10,6 +10,16 @@ import (
 var version = "dev"
 
 func main() {
+	root := newRootCmd()
+	if err := root.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, "aih: "+err.Error())
+		exit(1)
+	}
+}
+
+var exit = os.Exit
+
+func newRootCmd() *cobra.Command {
 	root := &cobra.Command{
 		Use:           "aih",
 		Short:         "agentic-ai harness — launch any agent CLI from anywhere with the right context",
@@ -25,8 +35,5 @@ func main() {
 		newShowCmd(),
 	)
 
-	if err := root.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "aih: "+err.Error())
-		os.Exit(1)
-	}
+	return root
 }
