@@ -70,7 +70,7 @@ func newLaunchCmd() *cobra.Command {
 				return err
 			}
 			if res.Signal != "" {
-				fmt.Fprintf(cmd.ErrOrStderr(), "aih: child terminated by signal %s\n", res.Signal)
+				_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "aih: child terminated by signal %s\n", res.Signal)
 			}
 			if res.ExitCode != 0 {
 				exit(res.ExitCode)

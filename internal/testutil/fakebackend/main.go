@@ -18,10 +18,10 @@ type record struct {
 
 func main() {
 	if s := os.Getenv("AIH_FAKE_STDOUT"); s != "" {
-		fmt.Fprint(os.Stdout, s)
+		_, _ = fmt.Fprint(os.Stdout, s)
 	}
 	if s := os.Getenv("AIH_FAKE_STDERR"); s != "" {
-		fmt.Fprint(os.Stderr, s)
+		_, _ = fmt.Fprint(os.Stderr, s)
 	}
 
 	rec := newRecord()
